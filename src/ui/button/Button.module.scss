@@ -29,3 +29,8 @@
 .button_clear:hover div {
 	color: white;
 }
+
+.button_disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}

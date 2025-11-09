@@ -1,20 +1,146 @@
-import { ArrowButton } from 'src/ui/arrow-button';
-import { Button } from 'src/ui/button';
-
+import { useOutsideClickClose } from 'src/ui/select/hooks/useOutsideClickClose';
 import styles from './ArticleParamsForm.module.scss';
+import { FormEvent, useRef, useState } from 'react';
+import { ArrowButton } from 'src/ui/arrow-button';
+import { RadioGroup } from 'src/ui/radio-group';
+import { Separator } from 'src/ui/separator';
+import { Button } from 'src/ui/button';
+import { Select } from 'src/ui/select';
+import { Text } from 'src/ui/text';
+import clsx from 'clsx';
+import {
+	defaultArticleState,
+	fontFamilyOptions,
+	ArticleStateType,
+	backgroundColors,
+	contentWidthArr,
+	fontSizeOptions,
+	fontColors,
+	OptionType
+} from 'src/constants/articleProps';
 
-export const ArticleParamsForm = () => {
+type TFormProps = {
+	state: ArticleStateType
+	setState: React.Dispatch<React.SetStateAction<ArticleStateType>>
+}
+
+
+export const ArticleParamsForm = (props: TFormProps) => {
+	const [isFormOpen, setIsFormOpen] = useState(false)
+	const [formState, setFormState] = useState(props.state)
+	const formRef = useRef<HTMLDivElement>(null)
+
+	const hasChanges = JSON.stringify(formState) !== JSON.stringify(props.state)
+	const isDefaultState = JSON.stringify(props.state) === JSON.stringify(defaultArticleState)
+	const canReset = hasChanges || !isDefaultState
+
+	useOutsideClickClose({
+		isOpen: isFormOpen,
+		rootRef: formRef,
+		onChange: setIsFormOpen
+	})
+
+	const handleSetOption = (
+		fieldName: keyof ArticleStateType,
+		selectedOption: OptionType
+	) => setFormState(prev => ({...prev, [fieldName]: selectedOption}))
+
+	const handleResetForm = () => {
+		setFormState(defaultArticleState)
+		props.setState(defaultArticleState)
+	}
+
+	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault()
+		props.setState(formState)
+	}
+
 	return (
 		<>
-			<ArrowButton isOpen={false} onClick={() => {}} />
-			<aside className={styles.container}>
-				<form className={styles.form}>
+			<ArrowButton 
+				isOpen={isFormOpen}
+				onClick={() => setIsFormOpen(!isFormOpen)}
+			/>
+			<aside
+				className={clsx(styles.container, {[styles.container_open]: isFormOpen})}
+				ref={formRef}
+			>
+				<form
+					className={styles.form}
+					onSubmit={handleSubmit}
+				>
+
+					{/* Заголовок */}
+					<Text
+						size={31}
+						weight={800}
+						uppercase
+						>Задайте параметры
+					</Text>
+
+					{/* Шрифт */}
+					<Select
+						selected={formState.fontFamilyOption}
+						options={fontFamilyOptions}
+						onChange={selectedOption => handleSetOption('fontFamilyOption', selectedOption)}
+						title='Шрифт'
+					/>
+
+					{/* Размер шрифта */}
+					<RadioGroup
+						key={`fontsize-${formState.fontSizeOption.value}`}
+						selected={formState.fontSizeOption}
+						options={fontSizeOptions}
+						onChange={selectedOption => handleSetOption('fontSizeOption', selectedOption)}
+						name='radioGroup'
+						title='Размер Шрифта'
+					/>
+
+					{/* Цвет шрифта */}
+					<Select
+						selected={formState.fontColor}
+						options={fontColors}
+						onChange={selectedOption => handleSetOption('fontColor', selectedOption)}
+						title='Цвет шрифта'
+					/>
+
+					{/* Разделитель */}
+					<Separator />
+
+					{/* Цвет фона */}
+					<Select
+						selected={formState.backgroundColor}
+						options={backgroundColors}
+						onChange={selectedOption => handleSetOption('backgroundColor', selectedOption)}
+						title='Цвет фона'
+					/>
+
+					{/* Ширина контента */}
+					<Select
+						selected={formState.contentWidth}
+						options={contentWidthArr}
+						onChange={selectedOption => handleSetOption('contentWidth', selectedOption)}
+						title='Ширина контента'
+					/>
+
+					{/* Кнопки */}
 					<div className={styles.bottomContainer}>
-						<Button title='Сбросить' htmlType='reset' type='clear' />
-						<Button title='Применить' htmlType='submit' type='apply' />
+						<Button
+							title='Сбросить'
+							onClick={handleResetForm}
+							htmlType='reset'
+							type='clear'
+							disabled={!canReset}
+						/>
+						<Button
+							title='Применить'
+							htmlType='submit'
+							type='apply'
+							disabled={!hasChanges}
+						/>
 					</div>
 				</form>
 			</aside>
 		</>
-	);
-};
+	)
+}
