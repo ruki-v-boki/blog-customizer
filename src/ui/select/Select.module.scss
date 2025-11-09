@@ -205,3 +205,7 @@
 	@include option-width-before;
 	background-image: url('../../images/narrow.svg');
 }
+
+:focus-visible {
+	outline: -webkit-focus-ring-color auto 1px;
+}
