@@ -1,6 +1,6 @@
 import { useOutsideClickClose } from 'src/ui/select/hooks/useOutsideClickClose';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import styles from './ArticleParamsForm.module.scss';
-import { FormEvent, useRef, useState } from 'react';
 import { ArrowButton } from 'src/ui/arrow-button';
 import { RadioGroup } from 'src/ui/radio-group';
 import { Separator } from 'src/ui/separator';
@@ -40,6 +40,14 @@ export const ArticleParamsForm = (props: TFormProps) => {
 		onChange: setIsFormOpen
 	})
 
+	useEffect(() => {
+		const handleEscape = (e:KeyboardEvent) => {
+			if(e.key === "Escape" && isFormOpen) setIsFormOpen(false)
+		}
+		document.addEventListener('keydown', handleEscape)
+		return () => document.removeEventListener('keydown', handleEscape)
+	}, [isFormOpen])
+
 	const handleSetOption = (
 		fieldName: keyof ArticleStateType,
 		selectedOption: OptionType
@@ -68,10 +76,11 @@ export const ArticleParamsForm = (props: TFormProps) => {
 				<form
 					className={styles.form}
 					onSubmit={handleSubmit}
+					onReset={handleResetForm}
 				>
 
 					{/* Заголовок */}
-					<Text
+					<Text as='h2'
 						size={31}
 						weight={800}
 						uppercase
@@ -88,12 +97,11 @@ export const ArticleParamsForm = (props: TFormProps) => {
 
 					{/* Размер шрифта */}
 					<RadioGroup
-						key={`fontsize-${formState.fontSizeOption.value}`}
 						selected={formState.fontSizeOption}
 						options={fontSizeOptions}
 						onChange={selectedOption => handleSetOption('fontSizeOption', selectedOption)}
-						name='radioGroup'
-						title='Размер Шрифта'
+						name='fontSize'
+						title='Размер шрифта'
 					/>
 
 					{/* Цвет шрифта */}
@@ -127,7 +135,6 @@ export const ArticleParamsForm = (props: TFormProps) => {
 					<div className={styles.bottomContainer}>
 						<Button
 							title='Сбросить'
-							onClick={handleResetForm}
 							htmlType='reset'
 							type='clear'
 							disabled={!canReset}

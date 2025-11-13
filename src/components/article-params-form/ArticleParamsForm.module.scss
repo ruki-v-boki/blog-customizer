@@ -3,13 +3,17 @@
 	left: 0;
 	width: 616px;
 	height: 100%;
-	overflow: scroll;
+	overflow: auto;
 	transform: translate(-616px);
 	transition: transform 0.5s ease;
 }
 
 .container_open {
 	transform: translate(0);
+}
+
+.container:not(.container_open) {
+	visibility: hidden;
 }
 
 .form {

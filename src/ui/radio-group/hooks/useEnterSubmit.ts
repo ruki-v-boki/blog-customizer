@@ -6,17 +6,20 @@ type UseEnterSubmit = {
 	option: OptionType;
 };
 
-export const useEnterSubmit = ({ onChange, option }: UseEnterSubmit) => {
+export const useEnterSubmit = ({ onChange, option, selected }
+	: UseEnterSubmit & { selected: OptionType}) => {
 	const optionRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		const optionHtml = optionRef.current;
 
-		if (!optionHtml) return;
+		if (!optionHtml || !onChange) return;
 
 		const handleEnterKeyDown = (event: KeyboardEvent) => {
 			if (document.activeElement === optionHtml && event.key === 'Enter') {
-				onChange?.(option);
+				if (option.value !== selected.value) {
+                    onChange(option);
+                }
 			}
 		};
 
@@ -26,6 +29,6 @@ export const useEnterSubmit = ({ onChange, option }: UseEnterSubmit) => {
 		return () => {
 			optionHtml.removeEventListener('keydown', handleEnterKeyDown);
 		};
-	}, [onChange, option]);
+	}, [onChange, option, selected.value]);
 	return optionRef;
 };
