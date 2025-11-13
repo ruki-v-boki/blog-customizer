@@ -29,10 +29,6 @@ export const useEnterSubmit = ({ onChange, option, selected }
 		return () => {
 			optionHtml.removeEventListener('keydown', handleEnterKeyDown);
 		};
-<<<<<<< HEAD
 	}, [onChange, option, selected.value]);
-=======
-	}, [onChange, option]);
->>>>>>> 83f6552ec23a4ade912f8fdd8fff655a4349ac0a
 	return optionRef;
 };
