@@ -16,7 +16,11 @@ type OptionProps = {
 export const Option = (props: OptionProps) => {
 	const { value, title, selected, groupName, onChange, option } = props;
 
+<<<<<<< HEAD
 	const optionRef = useEnterSubmit({ onChange, option, selected });
+=======
+	const optionRef = useEnterSubmit({ onChange, option });
+>>>>>>> 83f6552ec23a4ade912f8fdd8fff655a4349ac0a
 
 	const handleChange = () => onChange?.(option);
 
